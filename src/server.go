@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+    //"github.com/apache/arrow/go/v12/arrow"
 )
 
 type person struct {
@@ -19,12 +20,8 @@ var persons = []person{
 	{ID: 1, FirstName: "Steven", LastName: "Gerrard", Age: 46},
 }
 
-type PersonServer struct {
-	Server http.Server
-}
-
 func getPersons(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, persons)
+	c.JSON(http.StatusOK, persons)
 }
 
 func postPersons(c *gin.Context) {
@@ -33,9 +30,9 @@ func postPersons(c *gin.Context) {
     if err := c.BindJSON(&newPerson); err != nil {
         return
     }
-
+    
     persons = append(persons, newPerson)
-    c.IndentedJSON(http.StatusCreated, newPerson)
+    c.JSON(http.StatusCreated, newPerson)
 }
 
 func patchPerson(c *gin.Context) {
@@ -55,7 +52,7 @@ func patchPerson(c *gin.Context) {
         }
     }
     persons = newpersons
-    c.IndentedJSON(http.StatusCreated, updatedPerson)
+    c.JSON(http.StatusCreated, updatedPerson)
 }
 
 func getPersonByFirstName(c *gin.Context) {
@@ -63,11 +60,11 @@ func getPersonByFirstName(c *gin.Context) {
 
     for _, person := range persons {
         if person.FirstName == firstname {
-            c.IndentedJSON(http.StatusOK, person)
+            c.JSON(http.StatusOK, person)
             return
         }
     }
-    c.IndentedJSON(http.StatusNotFound, gin.H{"message": "person not found"})
+    c.JSON(http.StatusNotFound, gin.H{"message": "person not found"})
 }
 
 func main() {

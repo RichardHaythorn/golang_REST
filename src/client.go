@@ -1,10 +1,27 @@
-// package main
+// package client
 
 // import (
-//     "fmt"
-//     "net/http"
+// 	"net/http"
+// 	"strconv"
+
+// 	"github.com/gin-gonic/gin"
 // )
 
-// req, err := http.NewRequest("PUT","localhost:8080")
+// func Get() {
+// 	http.Get(())
 
-// client := http.Client{}
+// }
+
+// func Put() {
+
+	
+// }
+
+// func Patch(){
+
+// }
+
+// func main() {
+// 	client := http.Client{Adr:"localhost:8080"}
+
+// }
