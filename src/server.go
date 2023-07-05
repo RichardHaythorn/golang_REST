@@ -27,6 +27,7 @@ func getPersons(c *gin.Context) {
 func postPersons(c *gin.Context) {
     var newPerson person
 
+    //TODO generate new IDs
     if err := c.BindJSON(&newPerson); err != nil {
         return
     }
@@ -36,11 +37,15 @@ func postPersons(c *gin.Context) {
 }
 
 func patchPerson(c *gin.Context) {
+
     id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
     var updatedPerson person
 
     if err := c.BindJSON(&updatedPerson); err != nil {
         return
+    }
+    if updatedPerson.ID != 0 {
+        c.JSON(http.StatusNotAcceptable,"Cannot update ID")
     }
 
     newpersons := []person{}
@@ -73,7 +78,7 @@ func main() {
     router.GET("/persons", getPersons)
     router.POST("/persons", postPersons)
     router.GET("/persons/:firstname", getPersonByFirstName)
-    router.PATCH("/persons", patchPerson)
+    router.PATCH("/persons/:id", patchPerson)
 
     router.Run("localhost:8080")
 }
