@@ -95,7 +95,10 @@ func setup(router *gin.Engine) {
 	router.GET("/persons/:firstname", getPersonByFirstName)
 	router.PATCH("/persons/:id", patchPerson)
 
-	router.Run("localhost:8080")
+	err := router.Run("localhost:8080")
+    if err != nil {
+        panic(err)
+    }
 }
 
 func TestMain(m *testing.M) {
