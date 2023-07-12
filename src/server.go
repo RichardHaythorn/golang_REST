@@ -1,18 +1,17 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
-    //"github.com/apache/arrow/go/v12/arrow"
+	//"github.com/apache/arrow/go/v12/arrow"
 )
 
 type person struct {
-    ID        int64    `json:"id"`
+	ID        int64  `json:"id"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
-	Age       int64    `json:"age"`
+	Age       int64  `json:"age"`
 }
 
 var persons = []person{
@@ -25,60 +24,60 @@ func getPersons(c *gin.Context) {
 }
 
 func postPersons(c *gin.Context) {
-    var newPerson person
+	var newPerson person
 
-    //TODO generate new IDs
-    if err := c.BindJSON(&newPerson); err != nil {
-        return
-    }
-    
-    persons = append(persons, newPerson)
-    c.JSON(http.StatusCreated, newPerson)
+	//TODO generate new IDs
+	if err := c.BindJSON(&newPerson); err != nil {
+		return
+	}
+
+	persons = append(persons, newPerson)
+	c.JSON(http.StatusCreated, newPerson)
 }
 
 func patchPerson(c *gin.Context) {
 
-    id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-    var updatedPerson person
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	var updatedPerson person
 
-    if err := c.BindJSON(&updatedPerson); err != nil {
-        return
-    }
-    if updatedPerson.ID != 0 {
-        c.JSON(http.StatusNotAcceptable,"Cannot update ID")
-    }
+	if err := c.BindJSON(&updatedPerson); err != nil {
+		return
+	}
+	if updatedPerson.ID != 0 {
+		c.JSON(http.StatusNotAcceptable, "Cannot update ID")
+	}
 
-    newpersons := []person{}
-    for _, person := range persons {
-        if person.ID == id {
-            newpersons = append(newpersons, updatedPerson)
-        } else {            
-            newpersons = append(newpersons, person)
-        }
-    }
-    persons = newpersons
-    c.JSON(http.StatusCreated, updatedPerson)
+	newpersons := []person{}
+	for _, person := range persons {
+		if person.ID == id {
+			newpersons = append(newpersons, updatedPerson)
+		} else {
+			newpersons = append(newpersons, person)
+		}
+	}
+	persons = newpersons
+	c.JSON(http.StatusCreated, updatedPerson)
 }
 
 func getPersonByFirstName(c *gin.Context) {
-    firstname := c.Param("firstname")
+	firstname := c.Param("firstname")
 
-    for _, person := range persons {
-        if person.FirstName == firstname {
-            c.JSON(http.StatusOK, person)
-            return
-        }
-    }
-    c.JSON(http.StatusNotFound, gin.H{"message": "person not found"})
+	for _, person := range persons {
+		if person.FirstName == firstname {
+			c.JSON(http.StatusOK, person)
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"message": "person not found"})
 }
 
 func main() {
 
-    router := gin.Default()
-    router.GET("/persons", getPersons)
-    router.POST("/persons", postPersons)
-    router.GET("/persons/:firstname", getPersonByFirstName)
-    router.PATCH("/persons/:id", patchPerson)
+	router := gin.Default()
+	router.GET("/persons", getPersons)
+	router.POST("/persons", postPersons)
+	router.GET("/persons/:firstname", getPersonByFirstName)
+	router.PATCH("/persons/:id", patchPerson)
 
-    router.Run("localhost:8080")
+	router.Run("localhost:8080")
 }
