@@ -79,5 +79,8 @@ func main() {
 	router.GET("/persons/:firstname", getPersonByFirstName)
 	router.PATCH("/persons/:id", patchPerson)
 
-	router.Run("localhost:8080")
+	err := router.Run("localhost:8080")
+    if err != nil {
+        panic(err)
+    }
 }
