@@ -1,11 +1,12 @@
 package api_test
 
 import (
-	"github.com/RichardHaythorn/golang_REST/api"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/RichardHaythorn/golang_REST/api"
+	"github.com/gin-gonic/gin"
 )
 
 func TestPOST(t *testing.T) {
@@ -47,7 +48,7 @@ func TestPATCH(t *testing.T) {
 
 func setup(router *gin.Engine) {
 	router.GET("/persons", api.GetPersons)
-	router.POST("/persons", api.PostPersons)
+	router.POST("/persons", api.PostPerson)
 	router.GET("/persons/:firstname", api.GetPersonByFirstName)
 	router.PATCH("/persons/:id", api.PatchPerson)
 
