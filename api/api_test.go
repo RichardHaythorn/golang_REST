@@ -1,6 +1,7 @@
-package main
+package api_test
 
 import (
+	"github.com/RichardHaythorn/golang_REST/api"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
@@ -8,14 +9,14 @@ import (
 )
 
 func TestPOST(t *testing.T) {
-    resp, err := http.Get("http://localhost:8080/persons")
+	resp, err := http.Get("http://localhost:8080/persons")
 	if err != nil {
 		t.Errorf("Failed GET")
 	}
-    if resp.Status != "200 OK" {
+	if resp.Status != "200 OK" {
 		t.Errorf("Resp status not OK")
 	}
-    defer resp.Body.Close()
+	defer resp.Body.Close()
 }
 
 func TestGET(t *testing.T) {
@@ -23,10 +24,10 @@ func TestGET(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed GET")
 	}
-    if resp.Status != "200 OK" {
-		t.Errorf("Resp status not OK, Status: %s",resp.Status)
+	if resp.Status != "200 OK" {
+		t.Errorf("Resp status not OK, Status: %s", resp.Status)
 	}
-    defer resp.Body.Close()
+	defer resp.Body.Close()
 }
 
 func TestGETByID(t *testing.T) {
@@ -34,10 +35,10 @@ func TestGETByID(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed GET")
 	}
-    if resp.Status != "200 OK" {
-		t.Errorf("Resp status not OK, Status: %s",resp.Status)
+	if resp.Status != "200 OK" {
+		t.Errorf("Resp status not OK, Status: %s", resp.Status)
 	}
-    defer resp.Body.Close()
+	defer resp.Body.Close()
 }
 
 func TestPATCH(t *testing.T) {
@@ -45,10 +46,10 @@ func TestPATCH(t *testing.T) {
 }
 
 func setup(router *gin.Engine) {
-	router.GET("/persons", getPersons)
-	router.POST("/persons", postPersons)
-	router.GET("/persons/:firstname", getPersonByFirstName)
-	router.PATCH("/persons/:id", patchPerson)
+	router.GET("/persons", api.GetPersons)
+	router.POST("/persons", api.PostPersons)
+	router.GET("/persons/:firstname", api.GetPersonByFirstName)
+	router.PATCH("/persons/:id", api.PatchPerson)
 
 	router.Run("localhost:8080")
 }
