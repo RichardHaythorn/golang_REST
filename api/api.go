@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,12 +11,13 @@ import (
 )
 
 func GetPersons(c *gin.Context) {
-	persons, err := database.GetPersons()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, persons)
-	} else {
-		c.JSON(http.StatusOK, persons)
+	msg := database.Message{Type: "GET", Person: nil}
+	database.IN_channel <- msg
+	return_msg := <- database.OUT_channel
+	if return_msg.Err != nil{
+		c.JSON(http.StatusInternalServerError, msg)
 	}
+	c.JSON(http.StatusOK, return_msg.Person)
 }
 
 func PostPerson(c *gin.Context) {
@@ -24,10 +26,12 @@ func PostPerson(c *gin.Context) {
 	//TODO generate new IDs
 	if err := c.BindJSON(&newPerson); err != nil {
 		return
-	}
-	err := database.PostPerson(newPerson)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, newPerson)
+	}	
+	msg := database.Message{Type: "POST", Person: []database.Person{newPerson}}
+	database.IN_channel <- msg
+	return_msg := <- database.OUT_channel
+	if return_msg.Err != nil{
+		c.JSON(http.StatusInternalServerError, msg)
 	}
 	c.JSON(http.StatusCreated, newPerson)
 }
@@ -66,4 +70,21 @@ func GetPersonByFirstName(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusNotFound, gin.H{"message": "person not found"})
+}
+
+func Main() {
+	fmt.Println("Starting Server")
+
+	router := gin.Default()
+	router.GET("/persons", GetPersons)
+	router.POST("/persons", PostPerson)
+	router.GET("/persons/:firstname", GetPersonByFirstName)
+	router.PATCH("/persons/:id", PatchPerson)
+
+	err := router.Run("localhost:8080")
+	if err != nil{
+		panic(err)
+	}
+
+	fmt.Println("Server Running")
 }

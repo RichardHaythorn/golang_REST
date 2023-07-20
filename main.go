@@ -1,17 +1,19 @@
 package main
 
 import (
+	"sync"
+
 	"github.com/RichardHaythorn/golang_REST/api"
-	"github.com/gin-gonic/gin"
+	"github.com/RichardHaythorn/golang_REST/database"
 )
 
 func main() {
+	var wg sync.WaitGroup
+	go api.Main()	
+	wg.Add(1)
+	go database.Main()	
+	wg.Add(1)
 
-	router := gin.Default()
-	router.GET("/persons", api.GetPersons)
-	router.POST("/persons", api.PostPerson)
-	router.GET("/persons/:firstname", api.GetPersonByFirstName)
-	router.PATCH("/persons/:id", api.PatchPerson)
+	wg.Wait()
 
-	router.Run("localhost:8080")
 }
