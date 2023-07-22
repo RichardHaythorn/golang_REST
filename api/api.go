@@ -5,36 +5,35 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/RichardHaythorn/golang_REST/database"
 	"github.com/gin-gonic/gin"
+
+	"github.com/RichardHaythorn/golang_REST/database"
 	//"github.com/apache/arrow/go/v12/arrow"
 )
 
 func GetPersons(c *gin.Context) {
-	msg := database.Message{Type: "GET", Person: nil}
-	database.IN_channel <- msg
-	return_msg := <- database.OUT_channel
-	if return_msg.Err != nil{
-		c.JSON(http.StatusInternalServerError, msg)
-	}
-	c.JSON(http.StatusOK, return_msg.Person)
+	msg_str := fmt.Sprintf("{\"type\": \"%s\"}", c.Request.Method)
+	msg_bytes := []byte(msg_str)
+	database.IN_channel <- msg_bytes
+	return_msg_raw := <-database.OUT_channel
+	c.String(http.StatusOK, string(return_msg_raw))
 }
 
-func PostPerson(c *gin.Context) {
-	var newPerson database.Person
+// func PostPerson(c *gin.Context) {
+// 	var newPerson database.Person
 
-	//TODO generate new IDs
-	if err := c.BindJSON(&newPerson); err != nil {
-		return
-	}	
-	msg := database.Message{Type: "POST", Person: []database.Person{newPerson}}
-	database.IN_channel <- msg
-	return_msg := <- database.OUT_channel
-	if return_msg.Err != nil{
-		c.JSON(http.StatusInternalServerError, msg)
-	}
-	c.JSON(http.StatusCreated, newPerson)
-}
+// 	//TODO generate new IDs
+// 	if err := c.BindJSON(&newPerson); err != nil {
+// 		return
+// 	}
+// 	msg := database.Message{Type: "POST", Person: []database.Person{newPerson}}
+// 	database.IN_channel <- msg
+// 	return_msg := <- database.OUT_channel
+// 	if return_msg.Err != nil{
+// 		c.JSON(http.StatusInternalServerError, msg)
+// 	}
+// 	c.JSON(http.StatusCreated, newPerson)
+// }
 
 func PatchPerson(c *gin.Context) {
 
@@ -77,12 +76,12 @@ func Main() {
 
 	router := gin.Default()
 	router.GET("/persons", GetPersons)
-	router.POST("/persons", PostPerson)
+	//router.POST("/persons", PostPerson)
 	router.GET("/persons/:firstname", GetPersonByFirstName)
 	router.PATCH("/persons/:id", PatchPerson)
 
 	err := router.Run("localhost:8080")
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 
