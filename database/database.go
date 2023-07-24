@@ -40,10 +40,12 @@ func Main() {
 	for {
 		in_msg_raw := <-IN_channel
 		var in_msg Message
+		out_msg_raw := make([]byte,100)
 		err := json.Unmarshal(in_msg_raw, &in_msg)
 		if err != nil {
-			out_msg_raw, _ := json.Marshal(Message{Err: err})
-			OUT_channel <- out_msg_raw
+			fmt.Println(err)
+			err_bytes := []byte("Database error unmarshalling message")
+			OUT_channel <- err_bytes
 		}
 		fmt.Println("received message", in_msg)
 		switch in_msg.Type {
@@ -53,18 +55,25 @@ func Main() {
 				out_msg_raw, _ := json.Marshal(err)
 				OUT_channel <- out_msg_raw
 			}
-			out_msg_raw, err := json.Marshal(persons)
+			out_msg_raw, err = json.Marshal(persons)
 			if err != nil {
 				out_msg_raw, _ := json.Marshal(err)
 				OUT_channel <- out_msg_raw
 			}
-			if err == nil {
-				OUT_channel <- out_msg_raw
-			}
-			// case "POST":
-			// 	err := PostPerson(in_msg.Person[0])
-			// 	out_msg := Message{Type: "POST", Person: nil, Err: err}
-			// 	OUT_channel <- out_msg
+			case "POST":
+				err := PostPerson(in_msg.Person[0])
+				if err != nil {
+					out_msg_raw, _ := json.Marshal(err)
+					OUT_channel <- out_msg_raw
+				}
+				out_msg_raw, err = json.Marshal(in_msg)
+				if err != nil {
+					out_msg_raw, _ := json.Marshal(err)
+					OUT_channel <- out_msg_raw
+				}		
+		}
+		if err == nil {
+			OUT_channel <- out_msg_raw
 		}
 	}
 

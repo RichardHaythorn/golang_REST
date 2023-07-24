@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
 
@@ -19,21 +20,17 @@ func GetPersons(c *gin.Context) {
 	c.String(http.StatusOK, string(return_msg_raw))
 }
 
-// func PostPerson(c *gin.Context) {
-// 	var newPerson database.Person
-
-// 	//TODO generate new IDs
-// 	if err := c.BindJSON(&newPerson); err != nil {
-// 		return
-// 	}
-// 	msg := database.Message{Type: "POST", Person: []database.Person{newPerson}}
-// 	database.IN_channel <- msg
-// 	return_msg := <- database.OUT_channel
-// 	if return_msg.Err != nil{
-// 		c.JSON(http.StatusInternalServerError, msg)
-// 	}
-// 	c.JSON(http.StatusCreated, newPerson)
-// }
+func PostPerson(c *gin.Context) {
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		panic(err)
+	}
+	msg_str := fmt.Sprintf("{\"type\": \"%s\", \"Person\" : [%s]}", c.Request.Method, string(body))
+	msg_bytes := []byte(msg_str)
+	database.IN_channel <- msg_bytes
+	return_msg_raw := <-database.OUT_channel
+	c.String(http.StatusOK, string(return_msg_raw))
+}
 
 func PatchPerson(c *gin.Context) {
 
@@ -76,7 +73,7 @@ func Main() {
 
 	router := gin.Default()
 	router.GET("/persons", GetPersons)
-	//router.POST("/persons", PostPerson)
+	router.POST("/persons", PostPerson)
 	router.GET("/persons/:firstname", GetPersonByFirstName)
 	router.PATCH("/persons/:id", PatchPerson)
 
