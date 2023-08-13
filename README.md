@@ -4,10 +4,10 @@ Repo for practicing creating a REST API in Golang
 
 
 GET
-"curl http://localhost:8080/persons --header "Content-Type: application/json" --request "GET"" 
+"curl http://localhost:8080/persons --header "Content-Type: application/json" --request "GET""
 
-GET BY FIRSTNAME 
-"curl http://localhost:8080/persons/:firstname --header "Content-Type: application/json" --request "GET"" 
+GET BY FIRSTNAME
+"curl http://localhost:8080/persons/:firstname --header "Content-Type: application/json" --request "GET""
 
 POST
 "curl http://localhost:8080/persons --include --header "Content-Type: application/json" --request "POST" --data "{\"firstname\": \"Steve\",\"lastname\": \"Smith\",\"age\": 35}""

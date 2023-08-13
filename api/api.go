@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"io/ioutil"
+	"io"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/RichardHaythorn/golang_REST/database"
-	//"github.com/apache/arrow/go/v12/arrow"
 )
 
 func GetPersons(c *gin.Context) {
@@ -21,7 +20,7 @@ func GetPersons(c *gin.Context) {
 }
 
 func PostPerson(c *gin.Context) {
-	body, err := ioutil.ReadAll(c.Request.Body)
+	body, err := io.ReadAll(c.Request.Body)
 	if err != nil {
 		panic(err)
 	}

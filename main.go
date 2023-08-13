@@ -9,9 +9,9 @@ import (
 
 func main() {
 	var wg sync.WaitGroup
-	go api.Main()	
+	go api.Main()
 	wg.Add(1)
-	go database.Main()	
+	go database.Main()
 	wg.Add(1)
 
 	wg.Wait()
