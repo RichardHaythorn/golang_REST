@@ -1,8 +1,11 @@
 package database
 
+import "fmt"
+
 type Database interface {
 	GetEntity(ID int64) []Person
-	PostEntity() string
+	GetAllEntities()
+	PostEntity(Person) error
 }
 
 type PersonsDB struct {
@@ -16,25 +19,29 @@ type Person struct {
 	Age       int64  `json:"age"`
 }
 
-func (d PersonsDB) GetEntity(ID int64) []Person {
-	if ID == -1 {
-		return d.Data
-	} else {
-		for i := 0; i < len(d.Data); i++ {
-			if d.Data[i].ID == ID {
-				return []Person{d.Data[i]}
-			}
+var Person_DB = PersonsDB{
+	Data: []Person{
+		{ID: 0, FirstName: "John", LastName: "Smith", Age: 25},
+		{ID: 1, FirstName: "Steven", LastName: "Gerrard", Age: 46},
+	},
+}
+
+func (d *PersonsDB) GetAllEntities() []Person {
+	return d.Data
+}
+
+func (d *PersonsDB) GetEntity(ID int64) []Person {
+	for i := 0; i < len(d.Data); i++ {
+		if d.Data[i].ID == ID {
+			return []Person{d.Data[i]}
 		}
 	}
 	return nil
-
 }
 
-func (d PersonsDB) PostEntity() string {
-	return ""
+func (d *PersonsDB) PostEntity(p Person) error {
+	d.Data = append(d.Data,p)
+	fmt.Println(d.Data)
+	return nil
 }
 
-// func PostPerson(newPerson Person) error {
-// 	Persons = append(Persons, newPerson)
-// 	return nil
-// }
