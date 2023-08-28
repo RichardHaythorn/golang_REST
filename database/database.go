@@ -1,6 +1,8 @@
 package database
 
-import "fmt"
+import (
+	"errors"
+)
 
 type Database interface {
 	GetEntity(ID int64) []Person
@@ -30,18 +32,17 @@ func (d *PersonsDB) GetAllEntities() []Person {
 	return d.Data
 }
 
-func (d *PersonsDB) GetEntity(ID int64) []Person {
+func (d *PersonsDB) GetEntity(ID int64) (Person, error) {
 	for i := 0; i < len(d.Data); i++ {
 		if d.Data[i].ID == ID {
-			return []Person{d.Data[i]}
+			return d.Data[i], nil
 		}
 	}
-	return nil
+	return Person{}, errors.New("ID not found")
 }
 
 func (d *PersonsDB) PostEntity(p Person) error {
 	d.Data = append(d.Data,p)
-	fmt.Println(d.Data)
 	return nil
 }
 

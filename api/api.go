@@ -20,10 +20,14 @@ func GetPersons(c *gin.Context) {
 func GetPersonByID(c *gin.Context) {
  	ID, err := strconv.ParseInt(c.Param("id"),0,64)
 	if err != nil{
-		c.JSON(http.StatusBadRequest, "Bad ID")
+		c.JSON(http.StatusBadRequest, "Bad ID value")
 		return
 	}
-	persons := database.Person_DB.GetEntity(ID)
+	persons, err := database.Person_DB.GetEntity(ID)
+	if err != nil {
+		c.JSON(http.StatusNotFound, "ID not found")
+		return
+	}
 	c.JSON(http.StatusOK, persons)
 }
 
@@ -35,7 +39,6 @@ func PostPerson(c *gin.Context) {
         return
     }
 	database.Person_DB.PostEntity(newPerson)
-	fmt.Println(database.Person_DB)
     c.JSON(http.StatusCreated, newPerson)
 }
 
